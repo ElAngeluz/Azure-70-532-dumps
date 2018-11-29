@@ -1,0 +1,8 @@
+﻿################################################################################
+# Este archivo .gitignore ha sido creado automáticamente por Microsoft(R) Visual Studio.
+################################################################################
+
+/Practica Azure/AzureProgram/ConnectConsoleAzure/obj/Debug
+/Practica Azure/AzureProgram/ConnectConsoleAzure/bin/Debug
+/Practica Azure/AzureProgram/packages
+/Practica Azure/AzureProgram/.vs/AzureProgram/v15
