@@ -1,11 +1,8 @@
-﻿using Microsoft.Azure;
+﻿using ConnectConsoleAzure.Entities;
+using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConnectConsoleAzure
 {
@@ -16,7 +13,16 @@ namespace ConnectConsoleAzure
 
         static void Main(string[] args)
         {
+            CrearTable();
+        }
 
+        static void CrearTable()
+        {
+            var tableClient = storageAccount.CreateCloudTableClient();
+            var table = tableClient.GetTableReference("customers");
+            table.CreateIfNotExists();
+
+            table.Execute(Microsoft.WindowsAzure.Storage.Table.TableOperation.Insert(new CustomersEC("Pedro", "an@cf.cm")));
         }
 
         static void CrearBlob()
