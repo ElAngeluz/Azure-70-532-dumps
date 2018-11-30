@@ -2,6 +2,7 @@
 using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Table;
 using System;
 
 namespace ConnectConsoleAzure
@@ -11,18 +12,54 @@ namespace ConnectConsoleAzure
         static CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
                 CloudConfigurationManager.GetSetting("StorageConnection"));
 
+        static CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+        static CloudTable Table;
+
         static void Main(string[] args)
         {
-            CrearTable();
+            //CrearTable(_tableEntity: new CustomersEC("Pedro", "an@cf.cm"));
+            //GetNameCustomerTable("an@cf.cm");
+            GetNameAllCustomers();
+            Console.ReadLine();
         }
 
-        static void CrearTable()
+        static void UsingBashTable(string _TableName = "customers")
         {
-            var tableClient = storageAccount.CreateCloudTableClient();
-            var table = tableClient.GetTableReference("customers");
-            table.CreateIfNotExists();
+            var batch = new TableBatchOperation();
 
-            table.Execute(Microsoft.WindowsAzure.Storage.Table.TableOperation.Insert(new CustomersEC("Pedro", "an@cf.cm")));
+            batch.Insert(new CustomersEC("Pablo", "pablo@gtr.com"));
+            batch.Insert(new CustomersEC("Anggie", "anggie@gtr.com"));
+            batch.Insert(new CustomersEC("Pedro", "pedro@gtr.com"));
+        }
+
+        static void CrearTable(ITableEntity _tableEntity,string _TableName= "customers")
+        {            
+            Table = tableClient.GetTableReference(_TableName);
+            Table.CreateIfNotExists();
+            Table.Execute(TableOperation.Insert(_tableEntity));
+        }
+
+        static void GetNameCustomerTable(string _email, string _TableName = "customers", string _partitionKey ="EC")
+        {
+            Table = tableClient.GetTableReference(_TableName);
+            var result = Table.Execute(TableOperation.Retrieve<CustomersEC>(_partitionKey,_email));
+            Console.WriteLine(((CustomersEC)result.Result).Name);
+        }
+
+        static void GetNameAllCustomers (string _TableName = "customers", string _ParititionKey="EC")
+        {
+            var query = new TableQuery<CustomersEC>()
+                .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal,_ParititionKey));
+
+            foreach (var customer in tableClient.GetTableReference(_TableName).ExecuteQuery(query))  //obtengo la referencia de la tabla y ejecuto la consulta           
+                Console.WriteLine(customer.Name);
+            
+        }
+
+        static void UpdateCustomer(CustomersEC _customerEc, string _TableName = "customers")
+        {
+            Table = tableClient.GetTableReference(_TableName);
+            Table.Execute(TableOperation.Replace(_customerEc));
         }
 
         static void CrearBlob()

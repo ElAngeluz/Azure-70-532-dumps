@@ -16,6 +16,13 @@ namespace ConnectConsoleAzure.Entities
         {
             Name = _name;
             Email = _email;
+            PartitionKey = "EC";
+            RowKey = _email;
+        }
+
+        public CustomersEC()
+        {
+
         }
     }
 }
