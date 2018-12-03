@@ -19,6 +19,7 @@ namespace ConnectConsoleAzure
         {
             //CrearTable(_tableEntity: new CustomersEC("Pedro", "an@cf.cm"));
             //GetNameCustomerTable("an@cf.cm");
+            UsingBashTable();
             GetNameAllCustomers();
             Console.ReadLine();
         }
@@ -30,6 +31,8 @@ namespace ConnectConsoleAzure
             batch.Insert(new CustomersEC("Pablo", "pablo@gtr.com"));
             batch.Insert(new CustomersEC("Anggie", "anggie@gtr.com"));
             batch.Insert(new CustomersEC("Pedro", "pedro@gtr.com"));
+
+            tableClient.GetTableReference(_TableName).ExecuteBatch(batch);            
         }
 
         static void CrearTable(ITableEntity _tableEntity,string _TableName= "customers")
